@@ -33,7 +33,7 @@ class SessionService {
     String? userId = prefs.getString('userId');
     String? userName = prefs.getString('userName');
     String? userEmail = prefs.getString('userEmail');
-
+    
     return {
       'userId': userId,
       'userName': userName,

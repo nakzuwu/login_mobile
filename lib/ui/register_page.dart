@@ -1,58 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_4/service/auth_service.dart';
+import 'package:flutter_application_4/service/session_service.dart';
 
-class RegisterPages extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
-  State<RegisterPages> createState() => _RegisterPagesState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPagesState extends State<RegisterPages> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-
   final _nameController = TextEditingController();
-
   final _emailController = TextEditingController();
-
   final _passwordController = TextEditingController();
-
-  final _retypePasswordController = TextEditingController();
-
+  final _reTypePasswordController = TextEditingController();
   final AuthService _authService = AuthService();
+  final SessionService _sessionService = SessionService();
 
   String? _nameError;
-
   String? _emailError;
-
   String? _passwordError;
 
-  void _register()async{
-    if(_formKey.currentState!.validate()){
-      print(_nameController.text);
-      try{ 
+  void _regiter()async {
+    if (_formKey.currentState!.validate()) {
+      try {
         final response = await _authService.register(
-          _nameController.text,
+          _nameController.text, 
           _emailController.text,
-          _passwordController.text,
-        );
-        if(response["status"]){
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('hoerrr'),),
+          _passwordController.text
           );
-          print("berhasil");
-        }else{
-          setState((){
-          _nameError = response["error"]['name']?[0];
-          _passwordError = response["error"]['password']?[0];
-          _emailError = response["error"]['email']?[0];
+
+        if (response["status"]) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('hdj'),),
+            SnackBar(content: Text(response["message"]))
           );
-        });}
-      }catch (e){
+        } else {
+          setState(() {
+            _nameError = response["error"]['name']?[0];
+            _passwordError = response["error"]['password']?[0];
+            _emailError = response["error"]['email']?[0];
+          });          
+        }
+
+        print(await _sessionService.getToken());
+        
+      } catch (e) {
         print(e);
-
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed: $e'))
+          );
       }
-
     }
   }
 
@@ -66,63 +62,65 @@ class _RegisterPagesState extends State<RegisterPages> {
           key: _formKey,
           child: Column(
             children: [
-              //name
+              // name
               TextFormField(
                 controller: _nameController,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Name', errorText: _nameError
                 ),
-                validator: (value){
-                  if (value==null||value.isEmpty){
+                validator: (value) {
+                  if (value==null || value.isEmpty) {
                     return 'Please enter your name';
                   }
                   return null;
                 },
               ),
-              //email
+              // email
               TextFormField(
                 controller: _emailController,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email', errorText: _emailError
                 ),
-                validator: (value){
-                  if (value==null||value.isEmpty){
-                    return 'Please enter your name';
+                validator: (value) {
+                  if (value==null || value.isEmpty) {
+                    return 'Please enter your email';
                   }
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)){
-                    return 'Enter a valid email';
+                  if(!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)){
+                    return 'enter a valid email';
                   }
                   return null;
                 },
               ),
-              //pass
-              TextFormField(
+              // password
+               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Password', errorText: _passwordError
                 ),
-                validator: (value){
-                  if (value==null||value.isEmpty){
+                validator: (value) {
+                  if (value==null || value.isEmpty) {
                     return 'Please enter your Password';
                   }
+                  return null;
                 },
               ),
-              //retype pssword
+              // retype password
               TextFormField(
-                controller: _retypePasswordController,
+                controller: _reTypePasswordController,
                 obscureText: true,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Retype Password', errorText: _passwordError
                 ),
-                validator: (value){
-                  if (value==null||value.isEmpty){
-                    return 'Please Retype your Password';
+                validator: (value) {
+                  if (value==null || value.isEmpty) {
+                    return 'Please enter your password';
                   }
+                  return null;
                 },
               ),
               ElevatedButton(onPressed: (){
-                _register();
+                _regiter();
               }, child: Text("Register"))
             ],
           ),
