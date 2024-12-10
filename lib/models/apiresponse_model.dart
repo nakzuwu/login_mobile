@@ -7,16 +7,16 @@ class ApiresponseModel {
   ApiresponseModel({
     required this.status,
     required this.message,
-     this.errors,
-     this.data,
+    this.errors,
+    this.data,
   });
 
-  factory ApiresponseModel.fromJson(Map<String,dynamic> json){
+  factory ApiresponseModel.fromJson(Map<String, dynamic> json) {
     return ApiresponseModel(
-      status: json['status'], 
-      message: json['message'], 
-      errors: json['errors'], 
-      data: json['data']
-      );
+      status: json['status'] ?? '',
+      message: json['message'] ?? '',
+      errors: json['errors'],
+      data: json['data'], 
+    );
   }
 }
